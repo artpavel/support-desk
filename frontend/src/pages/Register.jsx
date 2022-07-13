@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import { FaUser } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FaUser } from 'react-icons/fa';
+import { useSelector, useDispatch } from 'react-redux';
+import { register, reset } from '../features/auth/authSlice';
+import Spinner from '../components/Spinner';
 
-const Register = () => {
+function Register() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,9 +16,29 @@ const Register = () => {
 
   const { name, email, password, password2 } = formData;
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    state => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    // Redirect when logged in
+    if (isSuccess || user) {
+      navigate('/');
+    }
+
+    dispatch(reset());
+  }, [isError, isSuccess, user, message, navigate, dispatch]);
+
   const onChange = e => {
-    setFormData(p => ({
-      ...p,
+    setFormData(prevState => ({
+      ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
@@ -24,17 +48,36 @@ const Register = () => {
 
     if (password !== password2) {
       toast.error('Passwords do not match');
+    } else {
+      const userData = {
+        name,
+        email,
+        password,
+      };
+
+      dispatch(register(userData));
     }
+
+    // Clear form
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      password2: '',
+    });
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>
       <section className='heading'>
         <h1>
-          <FaUser />
-          Register
-          <p>Please create an account</p>
+          <FaUser /> Register
         </h1>
+        <p>Please create an account</p>
       </section>
 
       <section className='form'>
@@ -71,7 +114,7 @@ const Register = () => {
               name='password'
               value={password}
               onChange={onChange}
-              placeholder='Enter your password'
+              placeholder='Enter password'
               required
             />
           </div>
@@ -88,12 +131,12 @@ const Register = () => {
             />
           </div>
           <div className='form-group'>
-            <button className='btn btn-block'>Sumbit</button>
+            <button className='btn btn-block'>Submit</button>
           </div>
         </form>
       </section>
     </>
   );
-};
+}
 
 export default Register;

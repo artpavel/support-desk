@@ -1,12 +1,11 @@
-import React from 'react';
-import { FaQuestionCircle, FaTicketAlt } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { FaQuestionCircle, FaTicketAlt } from 'react-icons/fa'
 
-const Home = () => {
+function Home() {
   return (
     <>
       <section className='heading'>
-        <h2>What do you need help with?</h2>
+        <h1>What do you need help with?</h1>
         <p>Please choose from an option below</p>
       </section>
 
@@ -18,7 +17,7 @@ const Home = () => {
         <FaTicketAlt /> View My Tickets
       </Link>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
